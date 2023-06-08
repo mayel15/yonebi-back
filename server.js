@@ -17,7 +17,7 @@ app.use(cors());
 try {
     mongoose.connect("mongodb+srv://mayel15:VI9huq6xg5tDn1qi@yonebi-cluster.0sdc2dh.mongodb.net/?retryWrites=true&w=majority")
 } catch (err) {
-    console.log(err)
+    console.log("connection to the database failed")
 }
 
 // listening server
@@ -26,8 +26,9 @@ app.listen(process.env.PORT, () => {
 })
 
 
-
-// POST
+/**
+ *  POST
+ * */ 
 // add a new resource
 app.post('/api/resources/add', (req, res) => {
     var newResource, newSubject, newCategory;
@@ -106,7 +107,10 @@ app.post('/api/subjects/add', (req, res) => {
 })*/
 
 
-// GET  
+/**
+ *  GET
+ * */ 
+
 // get the homepaage of the server
 app.get('/', (req, res) => {
     res.status(200).send({ message: "Bienvenue dans le serveur de Yonebi" })
@@ -123,13 +127,14 @@ app.get('/api/resources', (req, res) => {
 
 // get a particular resource
 app.get('/api/resources/:id', (req, res) => {
-    Resource.findById(req.params.id).then((r) => {
+    Resource.findById(req.params.id).then((resource) => {
         return (!resource) 
         ? res.status(404).send({message: "resource not found"}) 
         : res.status(200).send(resource) 
     })
 })
 
+// get the resource knowing the subject and category as parameters
 app.get('/api/:subject/:category/resources', (req, res) => {
     Subject.findOne({ name: req.params.subject })
         .then((subject) => {
@@ -161,6 +166,7 @@ app.get('/api/:subject/:category/resources', (req, res) => {
         });
 });
 
+// get a particular resource knowing the subject, category and its id as parameters
 app.get('/api/:subject/:category/resources/:id', (req, res) => {
     Subject.findOne({ name: req.params.subject })
     .then((subject) => {
@@ -192,12 +198,17 @@ app.get('/api/:subject/:category/resources/:id', (req, res) => {
     });
 })
 
-// get the resources per category
+// get the resources knowing a category as parameter
 app.get('/api/:category/resources', (req, res) => {
-    Resource.find({
-        category: req.params.category,
-    }).then((r) => {
-        res.send(r)
+    Category.find({name: req.params.category}).then((category) => {
+        if(!category){
+            return res.status(404).send({message: "category not found"})
+        }
+        Resource.find({category: category}).then((resource)=>{
+            return (!resource)
+            ? res.status(400).send({message: "resource not found"})
+            : res.status(200).send(resource)
+        })
     })
 })
 
@@ -212,80 +223,75 @@ app.get('/api/categories', (req, res) => {
     
 })
 
+// get all the categories of a subject as a parameter
 app.get('/api/:subject/categories', (req, res) => {
-    Category.find({
-        subject: req.params.subject.name,
-    }).then((c) => {
-        res.send(c)
+    Subject.findOne({name: req.params.subject}).then((subject)=>{
+        if(!subject){
+            return res.status(404).send({message: "subject not found"})
+        }
+        Category.find({subject: subject}).then((category)=>{
+            return (!category)
+            ? res.status(404).send({message: "category not found"})
+            : res.status(200).send(category)
+        })
+    })
+    
+})
+
+// get all the subjects
+app.get('/api/subjects', (req, res) => {
+    Subject.find().then((subject) => {
+        return (!subject)
+        ? res.status(404).send({message: "subject not found"})
+        : res.status(200).send(subject)
     })
 })
 
-
-app.get('/api/subjects', (req, res) => {
-    Subject.find().then((s) =>
-        res.status(200).send(s)
-    )
-})
-
-
-
+// get a particular subject with id as parameter
 app.get('/api/subjects/:id', (req, res) => {
     Subject.findById(req.params.id).then((subject) => {
-        if (!subject) {
-            return res.status(404).send({ message: "category not found" })
-        }
-        else {
-            res.status(200).send(subject)
-        }
+        return (!subject)
+        ? res.status(404).send({message: "subject not found"})
+        : res.status(200).send(subject)
     })
 })
 
-
+// get a particular category with id as parameter
 app.get('/api/category/:id', (req, res) => {
     Category.findById(req.params.id).then((category) => {
-        if (!category) {
-            return res.status(404).send({ message: "category not found" })
-        }
-        else {
-            res.status(200).send(category)
-        }
+        return (!category)
+        ? res.status(404).send({message: "category not found"})
+        : res.status(200).send(category)
     })
 })
 
-app.get('/api/resources/:id', (req, res) => {
-    Subject.findById(req.params.id).then((resource) => {
-        if (!resource) {
-            return res.status(404).send({ message: "category not found" })
-        }
-        else {
-            res.status(200).send(resource)
-        }
-    })
-})
+/**
+ *  PUT
+ * */ 
 
-// PUT
+// update a particular knowing the subject, category and id as parameters
 app.put('/api/:subject/:category/resources/:id', (req, res) => {
     Subject.findOne({ name: req.params.subject })
         .then((subject) => {
             if (!subject) {
-                return res.status(404).send('Subject not found');
+                return res.status(404).send('subject not found');
             }
             Category.findOne({ name: req.params.category })
                 .then((category) => {
                     if (!category) {
-                        return res.status(404).send('Category not found');
+                        return res.status(404).send('sategory not found');
                     }
                     Resource.findById(req.params.id)
                         .then((resource) => {
                             if (!resource) {
-                                return res.status(404).send('Resource not found')
+                                return res.status(404).send('resource not found')
                             }
                             else {
                                 resource.title = req.body.title
                                 resource.description = req.body.description
                                 resource.url = req.body.url
-                                resource.category = req.body.category
-                                resource.subject = req.body.subject
+                                resource.category.name = req.body.category
+                                resource.subject.name = req.body.subject
                                 resource.authors = req.body.authors
                                 resource.save()
                                 return res.status(200).send(resource)
@@ -307,6 +313,7 @@ app.put('/api/:subject/:category/resources/:id', (req, res) => {
         })
 })
 
+// update a particular resource knowing its id as a parameter
 app.put('/api/resources/:id', (req, res) => {
     Resource.findById(req.params.id).then((resource) => {
         if (!resource) {
@@ -316,8 +323,8 @@ app.put('/api/resources/:id', (req, res) => {
             resource.title = req.body.title
             resource.description = req.body.description
             resource.url = req.body.url
-            resource.category = req.body.category
-            resource.subject = req.body.subject
+            resource.category.name = req.body.category
+            resource.subject.name = req.body.subject
             resource.authors = req.body.authors
             resource.save()
             return res.status(200).send({ message: "updated successfully" })
@@ -327,10 +334,11 @@ app.put('/api/resources/:id', (req, res) => {
 
 })
 
+// update a particular category knowing its is as parameter
 app.put('/api/categories/:id', (req, res) => {
     Category.findById(req.params.id).then((category) => {
         if (!category) {
-            return res.send(404).send({ message: "subject not found" })
+            return res.send(404).send({ message: "category not found" })
         }
         else {
             category.name = req.body.category
@@ -342,7 +350,7 @@ app.put('/api/categories/:id', (req, res) => {
 
 })
 
-
+// update a particular category knowing its is as parameter
 app.put('/api/subjects/:id', (req, res) => {
     Subject.findByIdAndDelete(req.params.id).then((subject) => {
         if (!subject) {
@@ -358,20 +366,21 @@ app.put('/api/subjects/:id', (req, res) => {
 
 })
 
-// DELETE 
+/**
+ *  DELETE
+ * */ 
+
+// delete a particular subject 
 app.delete('/api/subjects/:id', (req, res) => {
     Subject.findByIdAndDelete(req.params.id).then((subject) => {
-        if (!subject) {
-            return res.send(404).send({ message: "subject not found" })
-        }
-        else {
-            return res.status(200).send({ message: "deleted successfully" })
-        }
-
+        return (!subject) 
+        ? res.send(404).send({ message: "subject not found" })
+        : res.status(200).send({ message: "deleted successfully" })
     })
 
 })
 
+//
 app.delete('/api/categories/:id', (req, res) => {
     SubCategoryject.findByIdAndDelete(req.params.id).then((category) => {
         if (!category) {
@@ -385,12 +394,12 @@ app.delete('/api/categories/:id', (req, res) => {
 
 })
 
-app.delete('/api/subjects/categories', (req, res) => {
-    Subject.findByIdAndDelete(req.params.id).then((subject) => {
+// delete the categories knowing the subject as parameter 
+app.delete('/api/:subject/categories', (req, res) => {
+    Subject.findOne(req.params.subject).then((subject) => {
         if (!subject) {
             return res.send(404).send({ message: "subject not found" })
         }
-
         Category.find({ subject: subject }).then((category) => {
             if (!category) {
                 return res.send(404).send({ message: "category not found" })
@@ -404,6 +413,25 @@ app.delete('/api/subjects/categories', (req, res) => {
 
 })
 
+// delete the resources knowing a category as parameter
+app.delete('/api/:category/resources', (req, res) => {
+    Category.find({name: req.params.category}).then((category) => {
+        if(!category){
+            return res.status(404).send({message: "category not found"})
+        }
+        Resource.find({category: category}).then((resource)=>{
+            if (!resource){
+                return res.status(400).send({message: "resource not found"})
+            }
+            else{
+                resource.delete()
+                return res.status(200).send({ message: "deleted successfully" })
+            }        
+        })
+    })
+})
+
+// delete a particumlar resource knowing its id
 app.delete('/api/resources/:id', (req, res) => {
     Resource.findByIdAndDelete(req.params.id).then((resource) => {
         if (!resource) {
@@ -414,7 +442,6 @@ app.delete('/api/resources/:id', (req, res) => {
         }
 
     })
-
 })
 
 

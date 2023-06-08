@@ -2,21 +2,21 @@ const mongoose = require('mongoose');
 
 // definition du modele de la collection "Subjects"
 const subjectSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: String,
 
 });
 
 // definition du modele de la collection "Category"
 const categorySchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: String,
     subject: subjectSchema
 })
 
 // definition du modele de la collection "Resource"
 const resourceSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    url: { type: String, required: true },
+    title: String,
+    description: String,
+    url: String,
     subject: subjectSchema,
     category: categorySchema,
     authors: [String],
@@ -26,8 +26,8 @@ const resourceSchema = new mongoose.Schema({
 
 // definition du modele de la collection "Resource"
 const userAdmin = new mongoose.Schema({
-    username: { type: String, required: true },
-    password: { type: String, required: true },
+    username: String,
+    password: String,
     registeredAt: { type: Date, default: Date.now },
 });
 

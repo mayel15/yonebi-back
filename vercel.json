@@ -1,0 +1,15 @@
+{
+    "version": 2,
+    "name": "by-ndeyaa",
+    "builds": [
+        {
+            "src": "mailer.js", "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "server.js"
+        }
+    ]
+}

@@ -68,16 +68,39 @@ app.post('/api/resources/add', (req, res) => {
 
                         })
                         newResource.save().then(() => {
-                            res.send(newResource)
+                            return res.send(newResource)
                         })
                     }
                     else {
-                        res.send({ message: "error :( a resource with the same name exists " })
+                        return res.send({ message: "error :( a resource with the same name exists " })
                     }
                 }).catch(() => res.status(404).send({ message: 'error' }))
 
         })
 
+    })
+})
+
+// add a user admin with a sign up : OK
+app.post('/api/useradmin/signup', (req, res) => {
+    UserAdmin.findOne({username: req.body.username, password: req.body.password}).then((userAdmin) => {
+        if (!userAdmin){
+            const newUser = new UserAdmin(req.body)
+            newUser.save()
+            return res.status(200).send(newUser)
+        }
+        else{
+            return res.status(200).send({message: "error :( the user already exists"})
+        }       
+    })
+})
+
+// login with an account : OK
+app.post('/api/useradmin/login', (req, res) => {
+    UserAdmin.findOne({username: req.body.username, password: req.body.password}).then((userAdmin) => {
+        return (!userAdmin)
+            ? res.status(404).send({ message: "bad credentials" })
+            : res.status(200).send({message: `${userAdmin.username} is connected`})          
     })
 })
 
@@ -273,6 +296,24 @@ app.get('/api/categories/:id', (req, res) => {
     })
 })
 
+// get all the user admin   parameter : OK
+app.get('/api/useradmin', (req, res) => {
+    UserAdmin.find().then((userAdmin) => {
+        return (!userAdmin)
+            ? res.status(404).send({ message: "user admin not found" })
+            : res.status(200).send(userAdmin)
+    })
+})
+
+// get a particular user admin with id as parameter : OK
+app.get('/api/useradmin/:id', (req, res) => {
+    UserAdmin.findById(req.params.id).then((userAdmin) => {
+        return (!userAdmin)
+            ? res.status(404).send({ message: "user admin not found" })
+            : res.status(200).send(userAdmin)
+    })
+})
+
 /**
  *  PUT
  * */
@@ -381,14 +422,28 @@ app.put('/api/subjects/:id', (req, res) => {
                     resource.save()
                 })
             })
-            subject.name = req.body.subject
-            subject.save()
-            return res.status(200).send({ message: "deleted successfully" })
+            return res.status(200).send({ message: "updated successfully" })
         }
 
     })
 
 })
+
+// update a user admin with id given in parameter : OK
+app.put('/api/useradmin/:id', (req, res) => {
+    UserAdmin.findById(req.params.id).then((userAdmin) => {
+        if (!userAdmin){
+            return res.send(404).send({ message: "user admin not found" })
+        }
+        else{
+            userAdmin.password = req.body.password
+            userAdmin.password = req.body.password
+            userAdmin.save()
+            return  res.status(200).send({message: "updated successfully"}) 
+        }    
+    })
+})
+
 
 /**
  *  DELETE
@@ -465,6 +520,15 @@ app.delete('/api/resources/:id', (req, res) => {
             return res.status(200).send({ message: "deleted successfully" })
         }
 
+    })
+})
+
+// delete a particular user admin : OK
+app.delete('/api/useradmin/:id', (req, res) => {
+    UserAdmin.findByIdAndDelete(req.params.id).then((userAdmin) => {
+        return (!userAdmin)
+            ? res.status(404).send({ message: "user admin not found" })
+            : res.status(200).send({message: `${userAdmin.username} is deleted successfully`})          
     })
 })
 

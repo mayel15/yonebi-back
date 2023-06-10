@@ -3,13 +3,12 @@ const mongoose = require('mongoose');
 // definition du modele de la collection "Subjects"
 const subjectSchema = new mongoose.Schema({
     name: String,
-
 });
 
 // definition du modele de la collection "Category"
 const categorySchema = new mongoose.Schema({
     name: String,
-    subject: subjectSchema
+    subject: String
 })
 
 // definition du modele de la collection "Resource"
@@ -17,18 +16,17 @@ const resourceSchema = new mongoose.Schema({
     title: String,
     description: String,
     url: String,
-    subject: subjectSchema,
-    category: categorySchema,
-    authors: [String],
-    addedAt: { type: Date, default: Date.now },
-    updatedAt: Date
+    subject: String,
+    category: String,
+    authors: String,
+    addedAt: { type: Date, default: Date() },
 });
 
 // definition du modele de la collection "Resource"
 const userAdmin = new mongoose.Schema({
     username: String,
     password: String,
-    registeredAt: { type: Date, default: Date.now },
+    registeredAt: { type: Date, default: Date() },
 });
 
 // creation des models à partir des schemas

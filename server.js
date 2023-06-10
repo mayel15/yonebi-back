@@ -428,7 +428,7 @@ app.delete('/api/subjects/:id', (req, res) => {
 app.delete('/api/categories/:id', (req, res) => {
     Category.findByIdAndDelete(req.params.id).then((category) => {
         return (!category)
-            ? res.status(404).send({ message: "subject not found" })
+            ? res.status(404).send({ message: "category not found" })
             : res.status(200).send({ message: "deleted successfully" })
 
     })
@@ -476,7 +476,7 @@ app.delete('/api/:category/resources', (req, res) => {
 app.delete('/api/resources/:id', (req, res) => {
     Resource.findByIdAndDelete(req.params.id).then((resource) => {
         return (!resource)
-        ? res.status(404).send({ message: "subject not found" })
+        ? res.status(404).send({ message: "resourcee not found" })
         : res.status(200).send({ message: "deleted successfully" })
     })
 })

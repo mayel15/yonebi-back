@@ -333,7 +333,7 @@ app.put('/api/:subject/:category/resources/:id', (req, res) => {
 app.put('/api/resources/:id', (req, res) => {
     Resource.findById(req.params.id).then((resource) => {
         if (!resource) {
-            return res.send(404).send({ message: "resource not found" })
+            return res.status(404).send({ message: "resource not found" })
         }
         else {
             resource.title = req.body.title
@@ -354,7 +354,7 @@ app.put('/api/resources/:id', (req, res) => {
 app.put('/api/categories/:id', (req, res) => {
     Category.findById(req.params.id).then((category_) => {
         if (!category_) {
-            return res.send(404).send({ message: "category not found" })
+            return res.status(404).send({ message: "category not found" })
         }
         else {
             Resource.find({ category: category_.name}).then((resource)=>{
@@ -374,7 +374,7 @@ app.put('/api/categories/:id', (req, res) => {
 app.put('/api/subjects/:id', (req, res) => {
     Subject.findById(req.params.id).then((subject_) => {
         if (!subject_) {
-            return res.send(404).send({ message: "subject not found" })
+            return res.status(404).send({ message: "subject not found" })
         }
         else {
             Category.find({ subject: subject_.name}).then((subjectCat)=>{
@@ -398,7 +398,7 @@ app.put('/api/subjects/:id', (req, res) => {
 app.put('/api/useradmin/:id', (req, res) => {
     UserAdmin.findById(req.params.id).then((userAdmin) => {
         if (!userAdmin){
-            return res.send(404).send({ message: "user admin not found" })
+            return res.status(404).send({ message: "user admin not found" })
         }
         else{
             userAdmin.username = req.body.username
@@ -416,39 +416,20 @@ app.put('/api/useradmin/:id', (req, res) => {
 
 // delete a particular subject : OK
 app.delete('/api/subjects/:id', (req, res) => {
-    Subject.findByIdAndDelete(req.params.id).then((subject_) => { 
-        if(!subject_){
-            return res.send(404).send({ message: "subject not found" })
-        }else{
-            Category.find({subject: subject_.name}).then((category_)=>{
-                (!category_)
-                ? res.status(404).send({ message: "category not found"})
-                : category_.subject = ''
-            })
-            Resource.find({subject: subject_.name}).then((resource_)=>{
-                (!resource_)
-                ? res.status(404).send({ message: "resource not found"})
-                : resource_.subject = ''
-            })
-            return res.status(200).send({ message: "deleted successfully" })
-        }            
+    Subject.findByIdAndDelete(req.params.id).then((subject) => {
+        return (!subject)
+            ? res.status(404).send({ message: "subject not found" })
+            : res.status(200).send({ message: "deleted successfully" })
     })
+
 })
 
 // delete a particular category : OK
 app.delete('/api/categories/:id', (req, res) => {
-    Category.findByIdAndDelete(req.params.id).then((category_) => {
-        if (!category_) {
-            return res.send(404).send({ message: "category not found" })
-        }
-        else {
-            Resource.find({category: category_.name}).then((resource_)=>{
-                (!resource_)
-                ? res.status(404).send({ message: "resource not found"})
-                : resource_.category = ''
-            })
-            return res.status(200).send({ message: "deleted successfully" })
-        }
+    Category.findByIdAndDelete(req.params.id).then((category) => {
+        return (!category)
+            ? res.status(404).send({ message: "subject not found" })
+            : res.status(200).send({ message: "deleted successfully" })
 
     })
 
@@ -458,11 +439,11 @@ app.delete('/api/categories/:id', (req, res) => {
 app.delete('/api/:subject/categories', (req, res) => {
     Subject.findOne({name: req.params.subject}).then((subject) => {
         if (!subject) {
-            return res.send(404).send({ message: "subject not found" })
+            return res.status(404).send({ message: "subject not found" })
         }
         Category.find({ subject: subject }).then((category) => {
             if (!category) {
-                return res.send(404).send({ message: "category not found" })
+                return res.status(404).send({ message: "category not found" })
             }
             else {
                 Category.findByIdAndDelete(category.id)
@@ -494,13 +475,9 @@ app.delete('/api/:category/resources', (req, res) => {
 // delete a particumlar resource knowing its id : OK 
 app.delete('/api/resources/:id', (req, res) => {
     Resource.findByIdAndDelete(req.params.id).then((resource) => {
-        if (!resource) {
-            return res.send(404).send({ message: "resource not found" })
-        }
-        else {
-            return res.status(200).send({ message: "deleted successfully" })
-        }
-
+        return (!resource)
+        ? res.status(404).send({ message: "subject not found" })
+        : res.status(200).send({ message: "deleted successfully" })
     })
 })
 

@@ -57,7 +57,7 @@ app.post('/api/resources/add', (req, res) => {
 
             Resource.findOne({ title: req.body.title })
                 .then((resource) => {
-                    if (!resource) {
+                    if (!resource && process.env.PASSWORDSECURITY === req.body.passwordSecurity) {
                         newResource = new Resource({
                             title: req.body.title,
                             description: req.body.description,

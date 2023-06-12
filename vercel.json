@@ -3,7 +3,7 @@
     "name": "yonebi",
     "builds": [
         {
-            "src": "server.js", "use": "@vercel/node"
+            "src": "server.js model.js", "use": "@vercel/node"
         }
     ],
     "routes": [

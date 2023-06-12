@@ -1,9 +1,9 @@
 {
     "version": 2,
-    "name": "by-ndeyaa",
+    "name": "yonebi",
     "builds": [
         {
-            "src": "mailer.js", "use": "@vercel/node"
+            "src": "server.js", "use": "@vercel/node"
         }
     ],
     "routes": [

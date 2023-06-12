@@ -100,7 +100,7 @@ app.post('/api/useradmin/login', (req, res) => {
     UserAdmin.findOne({username: req.body.username, password: req.body.password}).then((userAdmin) => {
         return (!userAdmin)
             ? res.status(404).send({ message: "bad credentials" })
-            : res.status(200).send({message: `${userAdmin.username} is connected`})          
+            : res.status(200).send({message: 'is connected'})          
     })
 })
 

@@ -3,7 +3,7 @@
     "name": "by-ndeyaa",
     "builds": [
         {
-            "src": "mailer.js", "use": "@vercel/node"
+            "src": "server.js", "use": "@vercel/node"
         }
     ],
     "routes": [

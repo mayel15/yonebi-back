@@ -57,22 +57,26 @@ app.post('/api/resources/add', (req, res) => {
 
             Resource.findOne({ title: req.body.title })
                 .then((resource) => {
-                    if (!resource && process.env.PASSWORDSECURITY === req.body.passwordSecurity) {
-                        newResource = new Resource({
-                            title: req.body.title,
-                            description: req.body.description,
-                            url: req.body.url,
-                            authors: req.body.authors,
-                            subject: newSubject.name,
-                            category: newCategory.name
+                    if (process.env.PASSWORDSECURITY === req.body.passwordSecurity) {
+                        if(!resource){
+                            newResource = new Resource({
+                                title: req.body.title,
+                                description: req.body.description,
+                                url: req.body.url,
+                                authors: req.body.authors,
+                                subject: newSubject.name,
+                                category: newCategory.name
 
-                        })
-                        newResource.save().then(() => {
-                            return res.send(newResource)
-                        })
-                    }
-                    else {
-                        return res.send({ message: "error :( a resource with the same name exists " })
+                            })
+                            newResource.save().then(() => {
+                                return res.send(newResource)
+                            })
+                        }
+                        else {
+                            return res.send({ message: "error :( a resource with the same name exists " })
+                        }
+                    }else{
+                        return res.send({ message: "invalid password security" })
                     }
                 }).catch(() => res.status(404).send({ message: 'error' }))
 

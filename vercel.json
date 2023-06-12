@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "name": "by-ndeyaa",
+    "name": "yonebi",
     "builds": [
         {
             "src": "server.js", "use": "@vercel/node"

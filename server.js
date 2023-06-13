@@ -367,8 +367,8 @@ app.put('/api/resources/:id', (req, res) => {
                     resource.title = req.body.title
                     resource.description = req.body.description
                     resource.url = req.body.url
-                    resource.category = newCategory
-                    resource.subject = newSubject
+                    resource.category = newCategory.name
+                    resource.subject = newSubject.name
                     resource.authors = req.body.authors
                     resource.save()
                     return res.status(200).send({ message: "updated successfully" })

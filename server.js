@@ -335,21 +335,47 @@ app.put('/api/:subject/:category/resources/:id', (req, res) => {
 
 // update a particular resource knowing its id as a parameter : OK
 app.put('/api/resources/:id', (req, res) => {
-    Resource.findById(req.params.id).then((resource) => {
-        if (!resource) {
-            return res.status(404).send({ message: "resource not found" })
-        }
-        else {
-            resource.title = req.body.title
-            resource.description = req.body.description
-            resource.url = req.body.url
-            resource.category = req.body.category
-            resource.subject = req.body.subject
-            resource.authors = req.body.authors
-            resource.save()
-            return res.status(200).send({ message: "updated successfully" })
+    var newSubject, newCategory;
+
+    Subject.findOne({ name: req.body.subject }).then((subject) => {
+        if (!subject) {
+            newSubject = new Subject({ name: req.body.subject });
+            newSubject.save().then(() => {
+                console.log({ message: "new subject added successfully", })
+            })
+        } else {
+            newSubject = subject;
+            console.log(newSubject)
         }
 
+        Category.findOne({ name: req.body.category }).then((category) => {
+            if (!category) {
+                newCategory = new Category({ name: req.body.category, subject: newSubject.name });
+                newCategory.save().then(() => {
+                    console.log({ message: "new category added successfully" })
+                })
+            } else {
+                newCategory = category;
+                console.log(newCategory)
+            }
+
+            Resource.findById(req.params.id).then((resource) => {
+                if (!resource) {
+                    return res.status(404).send({ message: "resource not found" })
+                }
+                else {
+                    resource.title = req.body.title
+                    resource.description = req.body.description
+                    resource.url = req.body.url
+                    resource.category = newCategory
+                    resource.subject = newSubject
+                    resource.authors = req.body.authors
+                    resource.save()
+                    return res.status(200).send({ message: "updated successfully" })
+                }
+
+            })
+        })
     })
 
 })

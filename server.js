@@ -387,11 +387,13 @@ app.put('/api/categories/:id', (req, res) => {
             return res.status(404).send({ message: "category not found" })
         }
         else {
+            category_.name = req.body.name
+            category_.save()
             Resource.find({ category: category_.name}).then((resource)=>{
-                category_.name = req.body.name
-                resource.category = req.body.name
-                category_.save()
-                resource.save()
+                resource.forEach((r)=>{
+                    r.category = req.body.name
+                    r.save()
+                })               
             })
             return res.status(200).send({ message: "updated successfully" })
         }
@@ -407,14 +409,19 @@ app.put('/api/subjects/:id', (req, res) => {
             return res.status(404).send({ message: "subject not found" })
         }
         else {
+            subject_.name = req.body.name
+            subject_.save()
             Category.find({ subject: subject_.name}).then((subjectCat)=>{
+                subjectCat.forEach((sc)=>{
+                    sc.subject = req.body.name
+                    sc.save()
+                })
                 Resource.find({ subject: subject_.name}).then((resource)=>{
-                    subjectCat.subject = req.body.name
-                    subject_.name = req.body.name
-                    resource.subject = req.body.name
-                    subject_.save()
-                    subjectCat.save()
-                    resource.save()
+                    resource.forEach((r)=>{    
+                        r.subject = req.body.name 
+                        r.save()
+                    })
+                    
                 })
             })
             return res.status(200).send({ message: "updated successfully" })

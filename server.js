@@ -388,8 +388,8 @@ app.put('/api/categories/:id', (req, res) => {
         }
         else {
             Resource.find({ category: category_.name}).then((resource)=>{
-                category_.name = req.body.category
-                resource.category = req.body.category
+                category_.name = req.body.name
+                resource.category = req.body.name
                 category_.save()
                 resource.save()
             })
@@ -409,9 +409,9 @@ app.put('/api/subjects/:id', (req, res) => {
         else {
             Category.find({ subject: subject_.name}).then((subjectCat)=>{
                 Resource.find({ subject: subject_.name}).then((resource)=>{
-                    subjectCat.subject = req.body.subject
-                    subject_.name = req.body.subject
-                    resource.subject = req.body.subject
+                    subjectCat.subject = req.body.name
+                    subject_.name = req.body.name
+                    resource.subject = req.body.name
                     subject_.save()
                     subjectCat.save()
                     resource.save()

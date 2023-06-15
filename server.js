@@ -390,7 +390,7 @@ app.put('/api/categories/:id', (req, res) => {
             category_.name = req.body.name
             category_.save()
             Resource.find({ category: category_.name}).then((resource)=>{
-                resource.forEach((r)=>{
+                resource.json().forEach((r)=>{
                     r.category = req.body.name
                     r.save()
                 })               
@@ -412,12 +412,12 @@ app.put('/api/subjects/:id', (req, res) => {
             subject_.name = req.body.name
             subject_.save()
             Category.find({ subject: subject_.name}).then((subjectCat)=>{
-                subjectCat.forEach((sc)=>{
+                subjectCat.json().forEach((sc)=>{
                     sc.subject = req.body.name
                     sc.save()
                 })
                 Resource.find({ subject: subject_.name}).then((resource)=>{
-                    resource.forEach((r)=>{    
+                    resource.json().forEach((r)=>{    
                         r.subject = req.body.name 
                         r.save()
                     })
